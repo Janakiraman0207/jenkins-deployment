@@ -13,8 +13,9 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                echo "Installing dependencies"
-                pip3 install --user flask
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install flask
                 '''
             }
         }
@@ -22,11 +23,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                echo "Stopping old application"
                 pkill -f app.py || true
-
-                echo "Starting application"
-                nohup python3 app.py > app.log 2>&1 &
+                nohup venv/bin/python app.py > app.log 2>&1 &
                 '''
             }
         }
