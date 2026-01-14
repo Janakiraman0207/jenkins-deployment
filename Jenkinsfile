@@ -1,40 +1,32 @@
 pipeline {
     agent any
 
-    environment {
-        VENV = "venv"
-    }
-
     stages {
 
         stage('Git Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/USERNAME/python-jenkins-gitcheckout.git'
+                    url: 'https://github.com/Janakiraman0207/jenkins-deployment.git'
             }
         }
 
-        stage('Create Virtual Environment') {
-            steps {
-                sh 'python3 -m venv $VENV'
-            }
-        }
-
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
                 sh '''
-                . $VENV/bin/activate
-                pip install --upgrade pip
-                pip install flask
+                echo "Installing dependencies"
+                pip3 install --user flask
                 '''
             }
         }
 
-        stage('Run Application') {
+        stage('Deploy') {
             steps {
                 sh '''
+                echo "Stopping old application"
                 pkill -f app.py || true
-                nohup $VENV/bin/python app.py > app.log 2>&1 &
+
+                echo "Starting application"
+                nohup python3 app.py > app.log 2>&1 &
                 '''
             }
         }
